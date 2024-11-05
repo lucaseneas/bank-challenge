@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Getter
@@ -17,5 +18,5 @@ public class Transacao {
     private Double valor;
     @NotNull
     @Past
-    private Date dataHora;
+    private OffsetDateTime dataHora;
 }

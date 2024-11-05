@@ -1,7 +1,6 @@
 package com.example.bank.controllers.transacaoController;
 
 import com.example.bank.domain.transacao.Transacao;
-import com.example.bank.domain.transacao.TransacaoRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +21,8 @@ public class TransacaoController {
     }
 
     @GetMapping
-    public ResponseEntity listarTodasTransacoes(){
-        return ResponseEntity.ok(listaTransacoes);
+    public List<Transacao> listarTodasTransacoes(){
+        return listaTransacoes;
     }
 
     @DeleteMapping
