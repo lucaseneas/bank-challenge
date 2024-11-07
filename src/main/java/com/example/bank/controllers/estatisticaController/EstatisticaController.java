@@ -1,7 +1,7 @@
 package com.example.bank.controllers.estatisticaController;
 
-import com.example.bank.controllers.transacaoController.TransacaoController;
-import com.example.bank.domain.transacao.Transacao;
+import com.example.bank.controllers.transacaoController.TransacaoRepository;
+import com.example.bank.controllers.transacaoController.TransacaoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,26 +19,24 @@ import java.util.stream.Collectors;
 public class EstatisticaController {
 
     @Autowired
-    private TransacaoController transacaoController;
+    private TransacaoRepository transacaoRepository;
 
     @GetMapping
-    public ResponseEntity estatisticasDoUltimoMinuto(){
-        List<Transacao> listaDeTransacoes = transacaoController.listarTodasTransacoes();
+    public ResponseEntity<EstatisticaDTO> estatisticasDoUltimoMinuto(){
+        OffsetDateTime dataHoraAtualMenos = OffsetDateTime.now().minusSeconds(60);
 
-        OffsetDateTime dataHoraAtual = OffsetDateTime.now();
-        OffsetDateTime dataHoraAtualMenos = dataHoraAtual.minusSeconds(60);
+        List<TransacaoRequest> listaDeTracoesEmSessentaSegundos = new ArrayList<>();
 
-        List<Transacao> listaDeTracoesEmSessentaSegundos = new ArrayList<>();
-
-        for (Transacao transacao : listaDeTransacoes) {
+        for (TransacaoRequest transacao : transacaoRepository.findAll()) {
             if(dataHoraAtualMenos.isBefore(transacao.getDataHora())){
                 listaDeTracoesEmSessentaSegundos.add(transacao);
             }
         }
 
         DoubleSummaryStatistics estatisticas = listaDeTracoesEmSessentaSegundos.stream()
-                .collect(Collectors.summarizingDouble(Transacao::getValor));
+                .collect(Collectors.summarizingDouble(TransacaoRequest::getValor));
 
-        return ResponseEntity.ok(estatisticas);
+        return ResponseEntity.ok(new EstatisticaDTO(estatisticas));
     }
+
 }
