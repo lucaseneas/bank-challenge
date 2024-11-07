@@ -27,27 +27,20 @@ public class EstatisticaController {
     public ResponseEntity estatisticasDoUltimoMinuto(){
         List<Transacao> listaDeTransacoes = transacaoController.listarTodasTransacoes();
 
-        OffsetDateTime agora = OffsetDateTime.parse("2020-08-07T12:35:08.789-03:00");
-        OffsetDateTime agoraMenosDez = agora.minusSeconds(10);
+        OffsetDateTime dataHoraAtual = OffsetDateTime.parse("2020-08-07T12:35:08.789-03:00");
+        OffsetDateTime dataHoraAtualMenos = dataHoraAtual.minusSeconds(10);
 
         List<Transacao> listaDeTracoesEmSessentaSegundos = new ArrayList<>();
+
         for (Transacao transacao : listaDeTransacoes) {
-            if(agoraMenosDez.isBefore(transacao.getDataHora())){
-                System.out.println(transacao.getDataHora());
+            if(dataHoraAtualMenos.isBefore(transacao.getDataHora())){
                 listaDeTracoesEmSessentaSegundos.add(transacao);
             };
         }
 
-
         DoubleSummaryStatistics estatisticas = listaDeTracoesEmSessentaSegundos.stream()
                 .collect(Collectors.summarizingDouble(Transacao::getValor));
-        System.out.println("Contagem: " + estatisticas.getCount());
-        System.out.println("Soma: " + estatisticas.getSum());
-        System.out.println("Mínimo: " + estatisticas.getMin());
-        System.out.println("Máximo: " + estatisticas.getMax());
-        System.out.println("Média: " + estatisticas.getAverage());
 
-
-        return ResponseEntity.ok(transacaoController.listarTodasTransacoes());
+        return ResponseEntity.ok(estatisticas);
     }
 }
